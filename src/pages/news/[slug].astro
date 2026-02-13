@@ -1,0 +1,29 @@
+---
+import { getAll, getStory } from '../../lib/storyblok';
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const news = await getAll({ 
+    content_type: 'NewsBlock' 
+  });
+
+  return news.map((item) => ({
+    params: { slug: item.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const story = await getStory(`news/${slug}`);
+
+if (!story) {
+  return Astro.redirect('/404');
+}
+---
+<Layout pageTitle={ story.content.title }>
+    <h1 class="font-bold text-4xl text-gray-500">{ story.content.title }</h1>
+    <div class="bg-center h-96 mt-8 overflow-hidden rounded-xl" style={`background-image: url('${ story.content.image.filename }')`}>
+        <img src={ story.content.image.filename } alt="" class="h-full hidden w-full" />
+    </div>
+    <pre class="font-sans mt-8 whitespace-pre-line">{ story.content.content }</pre>
+</Layout>

@@ -1,0 +1,50 @@
+---
+import { getAll, getStory } from '../../lib/storyblok';
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const response = await getAll({ 
+    content_type: 'ModelBlock' 
+  });
+
+  return response.map((item) => {
+    return {
+      params: { slug: item.slug },
+    };
+  });
+}
+
+const { slug } = Astro.params;
+
+const story = await getStory(`models/${slug}`, { resolve_relations: 'ModelBlock.brand' });
+
+if (!story) {
+  return Astro.redirect('/404');
+}
+---
+
+<Layout pageTitle={ story.content.name }>
+    <h1 class="font-bold text-4xl text-gray-500">{ story.content.name }</h1>
+    <div class="my-4 text-right">
+      <a href={ `/${story.content.brand[0].full_slug}` } class="underline">Back to Brand</a>
+    </div>
+    <div class="bg-center border border-gray-200 h-96 mt-8 overflow-hidden rounded-xl" style={ `background-image: url('${story.content.image.filename}')` }>
+        <img src={ story.content.image.filename } alt="" class="h-full hidden w-full" />
+    </div>
+    <table class="border border-gray-200 mt-6 w-full">
+      <tbody>
+        <tr>
+          <th class="bg-gray-100 border border-gray-200 p-3 text-left">Release Year</th>
+          <td class="border border-gray-200 p-3">{ story.content.release_year }</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-100 border border-gray-200 p-3 text-left">Brand</th>
+          <td class="border border-gray-200 p-3">{ story.content.brand[0].name }</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-100 border border-gray-200 p-3 text-left">Main Specs</th>
+          <td class="border border-gray-200 p-3">{ story.content.main_specs }</td>
+        </tr>
+      </tbody>
+    </table>
+</Layout>

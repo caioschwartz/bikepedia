@@ -1,0 +1,22 @@
+---
+import { getAll, getStory } from '../lib/storyblok';
+import Layout from "../layouts/Layout.astro";
+
+const brands = await getAll({ 
+  starts_with: 'brands/',
+  content_type: 'BrandBlock' 
+});
+---
+
+<Layout pageTitle="Brands">
+  <h1 class="font-bold text-4xl text-gray-500">Brands</h1>
+  <ul class="mt-4">
+    {
+      brands?.map((item) => (
+        <li class="mb-4">
+          <a href={ item.full_slug } class="border border-gray-300 inline-block p-2 rounded text-xl w-48">{ item.content.name }</a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

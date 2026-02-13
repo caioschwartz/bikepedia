@@ -1,0 +1,32 @@
+---
+import { getAll } from '../../lib/storyblok';
+import { getShortContent } from '../../lib/news';
+
+const { class: className, ...rest } = Astro.props;
+
+const news = await getAll({
+    content_type: 'NewsBlock',
+    starts_with: 'news/',
+});
+---
+
+<div class="home-news-component">
+    {
+        news?.map((item, index) => {
+            const isLastItem =  index === news.length - 1;
+
+            return (
+                <>
+                <div class="news-item mt-5">
+                    <h3 class="font-[700] mb-2 text-2xl text-gray-500">{ item.content.title }</h3>
+                    <pre class="whitespace-pre-line font-sans">{ getShortContent(item.content.content) }</pre>
+                    <div class="mt-3">
+                        <a href={ item.full_slug } class="bg-black inline-block p-2 text-white">Read the full article</a>
+                    </div>
+                </div>
+                { !isLastItem && <hr class="my-8" /> }
+                </>
+            )
+        })
+    }
+</div>

@@ -1,0 +1,22 @@
+---
+import { getAll } from "../lib/storyblok";
+
+const { class: className, ...rest } = Astro.props;
+
+const brands = await getAll({
+    content_type: 'BrandBlock',
+    starts_with: 'brands/',
+});
+---
+
+<ul class:list={["brands-cards flex gap-4 w-full", className]} {...rest}>
+    {
+        brands.map((item) => (
+            <li class="flex-1">
+                <a href={ item.full_slug } class="border border-gray-300 flex itens-center justify-center rounded p-8">
+                    <img src={ item.content.logo.filename } alt={ item.content.name } class="max-h-24">
+                </a>
+            </li>
+        ))
+    }
+</ul>

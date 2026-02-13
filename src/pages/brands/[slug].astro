@@ -1,0 +1,60 @@
+---
+import { getAll, getStory } from '../../lib/storyblok';
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const responseBrands = await getAll({ 
+    content_type: 'BrandBlock' 
+  });
+
+  return responseBrands.map((item) => ({
+    params: { slug: item.slug },
+    props: {
+        brand: item,
+    },
+  }));
+}
+
+const { brand } = Astro.props;
+
+  const responseModels = await getAll({ 
+    content_type: 'ModelBlock',
+    'filter_query[brand][in]': brand.uuid,
+  });
+
+if (!brand) {
+  return Astro.redirect('/404');
+}
+---
+
+<Layout pageTitle={ brand.name }>
+    <h1 class="font-bold text-4xl text-gray-500">{ brand.name }</h1>
+    <table class="border border-gray-200 mt-6 w-full">
+        <tbody>
+            <tr>
+                <th class="bg-gray-100 border border-gray-200 p-4 text-left w-48">Origin (Country)</th>
+                <td class="border border-gray-200 p-4">{ brand.content.origin_country }</td>
+                <td rowspan="2" class="border border-gray-200 p-4 w-48">
+                    <img src={ brand.content.logo.filename } alt="" class="w-48">
+                </td>
+            </tr>
+            <tr>
+                <th class="bg-gray-100 border border-gray-200 p-4 text-left">Foundation Year</th>
+                <td class="border border-gray-200 p-4">{ brand.content.founding_year }</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2 class="font-bold mt-6 text-xl text-gray-500">Models</h2>
+    <div class="model-cards-container flex gap-4 mt-4">
+        {
+            responseModels?.map((item) => (
+                <a href={ `/${item.full_slug}` } class="model-item block border border-gray-300 flex-1 overflow-hidden rounded">
+                    <div class="flex h-48 items-center justify-center overflow-hidden">
+                        <img src={ item.content.image.filename } alt="" class="scale-150">
+                    </div>
+                    <div class="p-3 text-center">{ item.content.name }</div>
+                </a>
+            ))
+        }
+    </div>
+</Layout>

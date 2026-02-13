@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BrandCards from '../components/BrandCards.astro';
+import HomeNews from '../components/home/HomeNews.astro';
+---
+
+<Layout>
+	<h1 class="mb-5 text-gray-400 text-center text-sm">Bikepedia, the encyclopedia for motorcycle fans</h1>
+	<div class="my-4 brand-select-container">
+		<h2 class="font-bold text-gray-600 text-xl">Choose a Brand</h2>
+		<BrandCards class="mt-3" />
+	</div>
+	<div class="news-container mt-10">
+		<h2 class="font-bold text-gray-600 text-xl">Motorcycle News</h2>
+		<hr>
+		<HomeNews class="mt-3" />
+	</div>
+</Layout>
